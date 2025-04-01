@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, Download, PieChart, LineChart, TrendingUp, TrendingDown } from 'lucide-react';
+import { BarChart3, Download, PieChart, LineChart as LineChartIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AnalyticsData } from '@/types';
 import { 
@@ -102,7 +102,7 @@ const AnalyticsDashboard: React.FC = () => {
           <StatCard
             title="Total Prescriptions"
             value={prescriptionsTotal}
-            icon={<LineChart className="h-8 w-8 text-medical-primary" />}
+            icon={<LineChartIcon className="h-8 w-8 text-medical-primary" />}
             trend="up"
             percentChange={8.5}
           />
