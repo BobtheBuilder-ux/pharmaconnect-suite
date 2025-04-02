@@ -7,7 +7,8 @@ interface AuthContextType {
   role: UserRole;
   isVerified: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (licenseId: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, licenseId: string) => Promise<void>;
   logout: () => void;
   checkAccess: (requiredRoles: UserRole[]) => boolean;
 }
@@ -35,8 +36,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate loading user from storage or API
     const loadUser = () => {
       // In a real implementation, we would check localStorage or make an API call
+      const savedUser = localStorage.getItem('user');
       setTimeout(() => {
-        setUser(mockUser);
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
         setIsLoading(false);
       }, 1000);
     };
@@ -44,16 +48,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (licenseId: string, password: string) => {
     setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    setUser(mockUser);
+    
+    // In a real implementation, this would verify against a backend
+    // For demo purposes, we'll always succeed if licenseId matches mock
+    if (licenseId === mockUser.licenseId) {
+      setUser(mockUser);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+    } else {
+      throw new Error('Invalid credentials');
+    }
+    
     setIsLoading(false);
+  };
+  
+  const signup = async (name: string, email: string, licenseId: string) => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // In a real implementation, this would create a user in the backend
+    // For demo purposes, we'll just create a mock user
+    const newUser: User = {
+      id: `doc-${Date.now()}`,
+      name,
+      email,
+      role: 'doctor',
+      isVerified: true,
+      licenseId,
+      verificationStatus: 'verified',
+    };
+    
+    // Not setting the user here as they would need to log in
+    setIsLoading(false);
+    return;
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   const checkAccess = (requiredRoles: UserRole[]) => {
@@ -69,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isVerified: user?.isVerified || false,
         isLoading,
         login,
+        signup,
         logout,
         checkAccess,
       }}
